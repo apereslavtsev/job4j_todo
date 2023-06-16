@@ -13,9 +13,9 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class HibernateTaskRepository implements TaskRepository {
+public class HibernateTaskStore implements TaskRepository {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HibernateTaskRepository.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(HibernateTaskStore.class.getName());
 
     private final SessionFactory sf;
 
