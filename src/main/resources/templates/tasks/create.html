@@ -21,9 +21,16 @@
     	
         <div class="col-9">
 	      <div class="mb-3">
-	        <label for="description" class="form-label"><b>Название</b></label>
-	        <input type="text" class="form-control" id="description" name="description">
+	        <label for="title" class="form-label"><b>Название</b></label>
+	        <input type="text" class="form-control" id="title" name="title">
 	      </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label"><b>Описание</b></label>
+                <textarea class="form-control" id="description" name="description"
+                          rows="10" placeholder="Описание задачи">
+                </textarea>
+            </div>
 
             <div class="form-check mb-3">
                 <input type="checkbox" name="done" class="form-check-input" id="done">

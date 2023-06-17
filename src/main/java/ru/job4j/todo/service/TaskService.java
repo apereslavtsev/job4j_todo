@@ -9,9 +9,11 @@ public interface TaskService {
 
     public Task create(Task task);
 
-    public void update(Task task);
+    public boolean update(Task task);
 
-    public void delete(int taskId);
+    public boolean delete(int taskId);
+
+    public boolean done(int id);
 
     public List<Task> findAll();
 

@@ -19,6 +19,7 @@ public class HibernateTaskStore implements TaskRepository {
 
     private final SessionFactory sf;
 
+    @Override
     public Task create(Task task) {
         Session session = sf.openSession();
         try {
@@ -33,21 +34,47 @@ public class HibernateTaskStore implements TaskRepository {
         return task;
     }
 
-    public void update(Task task) {
+    @Override
+    public boolean update(Task task) {
         Session session = sf.openSession();
+        boolean rsl = false;
         try {
             session.beginTransaction();
             session.update(task);
             session.getTransaction().commit();
             session.close();
+            rsl = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
             LOG.error("update tasks", e);
         }
+        return rsl;
     }
 
-    public void delete(int taskId) {
+    @Override
+    public boolean done(int id) {
         Session session = sf.openSession();
+        boolean rsl = false;
+        try {
+            session.beginTransaction();
+            rsl = session.createQuery(
+                    "update Task set done = :doneParam where id = :idParam")
+                    .setParameter("doneParam", true)
+                    .setParameter("idParam" ,id)
+                    .executeUpdate() > 0;
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            LOG.error("done tasks", e);
+        }
+        return rsl;
+    }
+
+    @Override
+    public boolean delete(int taskId) {
+        Session session = sf.openSession();
+        boolean rsl = false;
         try {
             session.beginTransaction();
             var task = new Task();
@@ -55,12 +82,15 @@ public class HibernateTaskStore implements TaskRepository {
             session.delete(task);
             session.getTransaction().commit();
             session.close();
+            rsl = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
             LOG.error("delete tasks", e);
         }
+        return rsl;
     }
 
+    @Override
     public List<Task> findAllOrderById() {
         Session session = sf.openSession();
         List<Task> result = List.of();
@@ -76,6 +106,7 @@ public class HibernateTaskStore implements TaskRepository {
         return result;
     }
 
+    @Override
     public List<Task> getByDoneOrderById(Boolean done) {
         Session session = sf.openSession();
         List<Task> result = List.of();
@@ -93,6 +124,7 @@ public class HibernateTaskStore implements TaskRepository {
         return result;
     }
 
+    @Override
     public Optional<Task> findById(int taskId) {
         Session session = sf.openSession();
         Optional<Task> result = Optional.empty();

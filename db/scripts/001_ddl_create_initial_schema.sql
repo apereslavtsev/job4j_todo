@@ -8,6 +8,7 @@ CREATE TABLE todo_user (
 CREATE TABLE tasks (
    id SERIAL PRIMARY KEY,
    user_id int references todo_user(id),
+   title TEXT,
    description TEXT,
    created TIMESTAMP,
    done BOOLEAN

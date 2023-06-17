@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.service.TaskService;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Controller
@@ -53,15 +52,11 @@ public class TaskController {
 
     @PostMapping("/done/{id}")
     public String doneTask(Model model, @PathVariable int id) {
-        Optional<Task> taskOptional = taskService.findById(id);
-        if (taskOptional.isEmpty()) {
+        if (!taskService.done(id)) {
             model.addAttribute("message", "Задача с указанным идентификатором не найден");
             LOG.error(String.format("tasks id %d not found", id));
             return "errors/404";
         }
-        Task task = taskOptional.get();
-        task.setDone(true);
-        taskService.update(task);
         return "redirect:/tasks";
     }
 
@@ -79,19 +74,22 @@ public class TaskController {
 
     @PostMapping("/update")
     public String update(@ModelAttribute Task task, Model model) {
-        try {
-            taskService.update(task);
-            return "redirect:/tasks";
-        } catch (Exception e) {
-            model.addAttribute("message", e.getMessage());
-            LOG.error("Exception in save tasks", e);
+        if(!taskService.update(task)) {
+            model.addAttribute("message", "Не удалось обновить задачу " + task);
+            LOG.error("tasks has not been updated" + task);
             return "errors/404";
         }
+        taskService.update(task);
+        return "redirect:/tasks";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(Model model, @PathVariable int id) {
-        taskService.delete(id);
+        if(!taskService.delete(id)) {
+            model.addAttribute("message", "Не удалось удалить задачу с указанным идентификатором");
+            LOG.error(String.format("tasks id %d has not been delete", id));
+            return "errors/404";
+        }
         return "redirect:/tasks";
     }
 
@@ -102,15 +100,8 @@ public class TaskController {
 
     @PostMapping("/create")
     public String create(@ModelAttribute Task task, Model model) {
-        try {
-            task.setCreated(LocalDateTime.now());
             taskService.create(task);
             return "redirect:/tasks";
-        } catch (Exception e) {
-            model.addAttribute("message", e.getMessage());
-            LOG.error("Exception in save tasks", e);
-            return "errors/404";
-        }
     }
 
 }

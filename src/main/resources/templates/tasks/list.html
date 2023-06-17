@@ -52,7 +52,7 @@
 
                     <td th:text="${task.id}"/>
 
-                    <td><a th:text="${task.description}" th:href="@{/tasks/{id}(id=${task.id})}"></a></td>
+                    <td><a th:text="${task.title}" th:href="@{/tasks/{id}(id=${task.id})}"></a></td>
 
                     <td th:text="${#temporals.format(task.created, 'dd.MM.yyyy')}"/>
 
