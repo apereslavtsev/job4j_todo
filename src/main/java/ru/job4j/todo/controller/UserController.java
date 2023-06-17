@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/users")
 public class UserController {
     
-    UserService userService;
+    private UserService userService;
 
     @GetMapping("/register")
     String getRegistationPage() {
@@ -29,7 +29,7 @@ public class UserController {
         var savedUser = userService.save(user);
         if (savedUser.isEmpty()) {
             model.addAttribute("message", "Пользователь с таким логином уже существует");
-            return "errors/404";
+            return "errors/409";
         }
         return "redirect:/";        
     }

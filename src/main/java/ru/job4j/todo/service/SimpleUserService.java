@@ -15,7 +15,7 @@ public class SimpleUserService implements UserService {
     
     private static final Logger LOG = LoggerFactory.getLogger(SimpleUserService.class.getName());
     
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
     public Optional<User> save(User user) {
