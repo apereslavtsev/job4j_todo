@@ -78,8 +78,7 @@ public class TaskController {
             model.addAttribute("message", "Не удалось обновить задачу " + task);
             LOG.error("tasks has not been updated" + task);
             return "errors/404";
-        }
-        taskService.update(task);
+        }        
         return "redirect:/tasks";
     }
 
