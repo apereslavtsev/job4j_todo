@@ -9,5 +9,5 @@
     <include file="scripts/002_ddl_add_todo_user_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/003_ddl_add_title_in_task_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/004_ddl_add_user_in_task_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/005_add_priority.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
-
