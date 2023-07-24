@@ -52,6 +52,22 @@
                        th:field="*{created}">
 			</div>
 
+            <div class="mb-3">
+                <label for="priority" class="form-label"><b>Приоритет</b></label>
+                <input type="text" readonly class="form-control" id="priority" name="priority"
+                       th:field="*{priority.name}">
+            </div>
+
+            <div class="mb-3">
+                <label for="category">Категория</label>
+                <select class="form-control" id="category" name="category" multiple="multiple"
+                        th:size="${task.categories.size()}">
+                    <option th:each="category : ${task.categories}"
+                            th:value="${category.id}"
+                            th:text="${category.name}">
+                    </option>
+                </select>
+            </div>
 
             <div class="mb-3">
                 <span th:if="${task.done}">

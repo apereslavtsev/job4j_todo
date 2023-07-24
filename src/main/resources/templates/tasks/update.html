@@ -40,6 +40,27 @@
                        th:field="*{created}">
             </div>
 
+            <div class="mb-3">
+                <label for="priorityId"><b>Приоритет</b></label>
+                <select class="form-control" id="priorityId" name="priorityId">
+                    <option th:each="optionPriority : ${priorities}"
+                            th:value="${optionPriority.id}"
+                            th:text="${optionPriority.name}"
+                            th:selected="${task.priority.id=optionPriority.id}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="category">Категория</label>
+                <select class="form-control" id="category" name="categoriesId" multiple="multiple">
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:text="${category.name}"
+                            th:selected="${task.categories.contains(category)}">
+                    </option>
+                </select>
+            </div>
+
             <div class="form-check mb-3">
                 <input type="checkbox" name="done" class="form-check-input" id="done" th:field="*{done}">
                 <label class="form-check-label" for="done">Выполнена</label>

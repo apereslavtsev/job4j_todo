@@ -68,7 +68,8 @@ public class HibernateTaskStore implements TaskRepository {
     public List<Task> findAllOrderById() {
         List<Task> result = List.of();
         try {
-            result = crudRepository.query("from Task as t left JOIN FETCH t.priority order by t.id", Task.class);
+            result = crudRepository.query(
+                    "from Task as t left JOIN FETCH t.priority order by t.id", Task.class);
         } catch (Exception e) {
             LOG.error("find all tasks", e);
         }
@@ -79,7 +80,8 @@ public class HibernateTaskStore implements TaskRepository {
     public List<Task> getByDoneOrderById(Boolean done) {
         List<Task> result = List.of();
         try {
-            result = crudRepository.query("from Task as t left JOIN FETCH t.priority where t.done = :fDone order by id",
+            result = crudRepository.query(
+                    "from Task as t left JOIN FETCH t.priority where t.done = :fDone order by id",
                     Task.class, Map.of("fDone", done));
         } catch (Exception e) {
             LOG.error("find tasks by done", e);
@@ -91,7 +93,8 @@ public class HibernateTaskStore implements TaskRepository {
     public Optional<Task> findById(int taskId) {
 
         return crudRepository.optional(
-                "from Task as t left JOIN FETCH t.priority where t.id = :fId", Task.class,
+                "select distinct t from Task as t left JOIN FETCH t.priority " +
+                        "left JOIN FETCH t.categories where t.id = :fId", Task.class,
                 Map.of("fId", taskId)
         );
 
