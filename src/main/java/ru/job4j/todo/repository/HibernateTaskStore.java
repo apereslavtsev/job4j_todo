@@ -93,8 +93,8 @@ public class HibernateTaskStore implements TaskRepository {
     public Optional<Task> findById(int taskId) {
 
         return crudRepository.optional(
-                "select distinct t from Task as t left JOIN FETCH t.priority " +
-                        "left JOIN FETCH t.categories where t.id = :fId", Task.class,
+                "select distinct t from Task as t left JOIN FETCH t.priority "
+                        + "left JOIN FETCH t.categories where t.id = :fId", Task.class,
                 Map.of("fId", taskId)
         );
 

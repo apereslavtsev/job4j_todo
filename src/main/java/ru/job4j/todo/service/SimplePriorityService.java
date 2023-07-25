@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Service
-public class SimplePriorityService implements PriorityService{
+public class SimplePriorityService implements PriorityService {
 
     private PriorityRepository priorityRepository;
 
