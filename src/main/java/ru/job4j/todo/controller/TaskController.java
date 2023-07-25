@@ -6,11 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.job4j.todo.model.Category;
-import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
-import ru.job4j.todo.repository.CategoryRepository;
 import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
@@ -89,6 +86,33 @@ public class TaskController {
         return "tasks/update";
     }
 
+
+    @GetMapping("/create")
+    public String getCreatePage(Model model) {
+        model.addAttribute("categories", categoryService.getAll());
+        model.addAttribute("priorities", priorityService.getAll());
+        return "tasks/create";
+    }
+
+    @PostMapping("/create")
+    public String create(@ModelAttribute Task task, Model model,
+                         @SessionAttribute User user,
+                         @RequestParam int priorityId,
+                         @RequestParam List<Integer> categoriesId) {
+        fillTaskFromAttributesData(task, user, priorityId, categoriesId);
+        taskService.create(task);
+        return "redirect:/tasks";
+    }
+
+    private void fillTaskFromAttributesData(Task task, User user, int priorityId,
+                                            List<Integer> categoriesId) {
+        task.setUser(user);        
+        task.setCategories(categoriesId.stream()
+                .map(i -> categoryService.getById(i).get())
+                .collect(Collectors.toList()));
+        task.setPriority(priorityService.getById(priorityId).get());        
+    }
+
     @PostMapping("/update")
     public String update(@ModelAttribute Task task, Model model,
                          @SessionAttribute User user,
@@ -103,15 +127,6 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
-    private void fillTaskFromAttributesData(Task task, User user, int priorityId,
-                                            List<Integer> categoriesId) {
-        task.setUser(user);
-        task.setPriority(priorityService.getById(priorityId).get());
-        task.setCategories(categoriesId.stream()
-                .map(i -> categoryService.getById(i).get())
-                .collect(Collectors.toList()));
-    }
-
     @GetMapping("/delete/{id}")
     public String delete(Model model, @PathVariable int id) {
         if (!taskService.delete(id)) {
@@ -119,21 +134,6 @@ public class TaskController {
             LOG.error(String.format("tasks id %d has not been delete", id));
             return "errors/404";
         }
-        return "redirect:/tasks";
-    }
-
-    @GetMapping("/create")
-    public String getCreatePage() {
-        return "tasks/create";
-    }
-
-    @PostMapping("/create")
-    public String create(@ModelAttribute Task task, Model model,
-                         @SessionAttribute User user,
-                         @RequestParam int priorityId,
-                         @RequestParam List<Integer> categoriesId) {
-        fillTaskFromAttributesData(task, user, priorityId, categoriesId);
-        taskService.create(task);
         return "redirect:/tasks";
     }
 

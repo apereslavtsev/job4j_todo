@@ -24,7 +24,7 @@ public class HibernateCategoryStore implements CategoryRepository {
     public Optional<Category> getById(int id) {
 
         return crudRepository.optional(
-                "select from Category as c where c.id = :fId", Category.class,
+                "from Category as c where c.id = :fId", Category.class,
                 Map.of("fId", id)
         );
     }

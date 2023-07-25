@@ -24,7 +24,7 @@ public class HibernatePriorityStore implements PriorityRepository {
     public Optional<Priority> getById(int id) {
 
         return crudRepository.optional(
-                "select from Priority as p where p.id = :fId", Priority.class,
+                "from Priority as p where p.id = :fId", Priority.class,
                 Map.of("fId", id)
         );
     }
