@@ -6,7 +6,6 @@ import ru.job4j.todo.model.Category;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
@@ -21,10 +20,9 @@ public class HibernateCategoryStore implements CategoryRepository {
     }
 
     @Override
-    public Optional<Category> getById(int id) {
-
-        return crudRepository.optional(
-                "from Category as c where c.id = :fId", Category.class,
+    public List<Category> getByIdList(List<Integer> id) {
+        return crudRepository.query(
+                "from Category as c where c.id in :fId", Category.class,
                 Map.of("fId", id)
         );
     }

@@ -104,15 +104,6 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
-    private void fillTaskFromAttributesData(Task task, User user, int priorityId,
-                                            List<Integer> categoriesId) {
-        task.setUser(user);        
-        task.setCategories(categoriesId.stream()
-                .map(i -> categoryService.getById(i).get())
-                .collect(Collectors.toList()));
-        task.setPriority(priorityService.getById(priorityId).get());        
-    }
-
     @PostMapping("/update")
     public String update(@ModelAttribute Task task, Model model,
                          @SessionAttribute User user,
@@ -125,6 +116,13 @@ public class TaskController {
             return "errors/404";
         }
         return "redirect:/tasks";
+    }
+
+    private void fillTaskFromAttributesData(Task task, User user, int priorityId,
+                                            List<Integer> categoriesId) {
+        task.setUser(user);        
+        task.setCategories(categoryService.getByIdList(categoriesId));
+        task.setPriority(priorityService.getById(priorityId).get());        
     }
 
     @GetMapping("/delete/{id}")
