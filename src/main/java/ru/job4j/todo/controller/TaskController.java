@@ -14,7 +14,6 @@ import ru.job4j.todo.service.TaskService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -30,26 +29,26 @@ public class TaskController {
     private CategoryService categoryService;
 
     @GetMapping()
-    public String getAll(Model model) {
-        model.addAttribute("tasks", taskService.findAll());
+    public String getAll(Model model, @SessionAttribute User user) {
+        model.addAttribute("tasks", taskService.findAll(user.getTimezone()));
         return "tasks/list";
     }
 
     @GetMapping("doneTasks")
-    public String getDoneTasks(Model model) {
-        model.addAttribute("tasks", taskService.findAllDone());
+    public String getDoneTasks(Model model, @SessionAttribute User user) {
+        model.addAttribute("tasks", taskService.findAllDone(user.getTimezone()));
         return "tasks/list";
     }
 
     @GetMapping("performedTasks")
-    public String getNotDoneTasks(Model model) {
-        model.addAttribute("tasks", taskService.findAllNotDone());
+    public String getNotDoneTasks(Model model, @SessionAttribute User user) {
+        model.addAttribute("tasks", taskService.findAllNotDone(user.getTimezone()));
         return "tasks/list";
     }
 
     @GetMapping("/{id}")
-    public String getById(Model model, @PathVariable int id) {
-        Optional<Task> taskOptional = taskService.findById(id);
+    public String getById(Model model, @PathVariable int id, @SessionAttribute User user) {
+        Optional<Task> taskOptional = taskService.findById(id, user.getTimezone());
         if (taskOptional.isEmpty()) {
             model.addAttribute("message", "Задача с указанным идентификатором не найден");
             LOG.error(String.format("tasks id %d not found", id));
@@ -71,8 +70,8 @@ public class TaskController {
     }
 
     @GetMapping("update/{id}")
-    public String getByIdForUpdate(Model model, @PathVariable int id) {
-        Optional<Task> taskOptional = taskService.findById(id);
+    public String getByIdForUpdate(Model model, @PathVariable int id, @SessionAttribute User user) {
+        Optional<Task> taskOptional = taskService.findById(id, user.getTimezone());
         if (taskOptional.isEmpty()) {
             model.addAttribute("message", "Задача с указанным идентификатором не найден");
             LOG.error(String.format("tasks id %d not found", id));

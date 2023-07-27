@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.repository.TaskRepository;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,4 +55,31 @@ public class SimpleTaskService implements TaskService {
     public Optional<Task> findById(int taskId) {
         return taskRepository.findById(taskId);
     }
+    
+    @Override
+    public List<Task> findAll(String timezone) {        
+        return Task.convertTaskListTimeFromTimeZone(findAll(), timezone);
+    }
+
+    @Override
+    public List<Task> findAllDone(String timezone) {
+        return Task.convertTaskListTimeFromTimeZone(findAllDone(), timezone);
+    }
+
+    @Override
+    public List<Task> findAllNotDone(String timezone) {
+        return Task.convertTaskListTimeFromTimeZone(findAllNotDone(), timezone);
+    }
+
+    @Override
+    public Optional<Task> findById(int taskId, String timezone) { 
+        var task = findById(taskId);        
+        if (task.isPresent()) {
+            task.get().convertTaskTimeFromTimezone(timezone);    
+        }
+        return task;
+    }
+
+
+
 }

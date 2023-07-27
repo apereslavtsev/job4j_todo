@@ -1,11 +1,11 @@
 package ru.job4j.todo.model;
 
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -25,7 +25,7 @@ public class Task {
 
     private String description;
 
-    @EqualsAndHashCode.Include
+    @EqualsAndHashCode.Include    
     private LocalDateTime created = LocalDateTime.now();
 
     @ManyToOne
@@ -45,5 +45,19 @@ public class Task {
             inverseJoinColumns = { @JoinColumn(name = "category_id") }
     )
     private List<Category> categories;
+
+    public static List<Task> convertTaskListTimeFromTimeZone(List<Task> tasks, String timezone) {
+        tasks.stream().forEach(t -> {
+            t.convertTaskTimeFromTimezone(timezone);
+        });
+        return tasks;
+    }
+
+    public void convertTaskTimeFromTimezone(String timezone) {
+        this.setCreated(
+            ZonedDateTime.of(this.getCreated(), ZoneOffset.UTC)
+                .withZoneSameInstant(ZoneId.of(timezone)).toLocalDateTime()
+            );   
+    }
 
 }

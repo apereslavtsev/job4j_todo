@@ -17,10 +17,18 @@ public interface TaskService {
 
     public List<Task> findAll();
 
+    public List<Task> findAll(String timezone);
+
     public List<Task> findAllDone();
+
+    public List<Task> findAllDone(String timezone);
 
     public List<Task> findAllNotDone();
 
+    public List<Task> findAllNotDone(String timezone);
+
     public Optional<Task> findById(int taskId);
 
+    public Optional<Task> findById(int taskId, String timezone);
+    
 }
