@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.job4j.todo.model.User;
 import ru.job4j.todo.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +17,8 @@ import java.util.TimeZone;
 public class SimpleUserService implements UserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleUserService.class.getName());
+
+    private static final String DEFAULT_TIMEZONE = TimeZone.getDefault().getID();
 
     private UserRepository userRepository;
 
@@ -39,6 +40,16 @@ public class SimpleUserService implements UserService {
     @Override
     public List<String> getAllTimeZones() {
         return Arrays.asList(TimeZone.getAvailableIDs());
+    }
+
+    @Override
+    public String getUserTimezoneOrDefault(User user) {
+        String timezone = user.getTimezone();
+        if (timezone == null
+                || timezone.isEmpty()) {
+            timezone = DEFAULT_TIMEZONE;
+        }
+        return timezone;
     }
 
 }

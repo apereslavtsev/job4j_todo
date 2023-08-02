@@ -14,6 +14,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class SimpleTaskService implements TaskService {
+    
     private TaskRepository taskRepository;
 
     @Override
@@ -58,28 +59,42 @@ public class SimpleTaskService implements TaskService {
     
     @Override
     public List<Task> findAll(String timezone) {        
-        return Task.convertTaskListTimeFromTimeZone(findAll(), timezone);
+        return convertTaskListTimeFromTimeZone(findAll(), timezone);
     }
 
     @Override
     public List<Task> findAllDone(String timezone) {
-        return Task.convertTaskListTimeFromTimeZone(findAllDone(), timezone);
+        return convertTaskListTimeFromTimeZone(findAllDone(), timezone);
     }
 
     @Override
     public List<Task> findAllNotDone(String timezone) {
-        return Task.convertTaskListTimeFromTimeZone(findAllNotDone(), timezone);
+        return convertTaskListTimeFromTimeZone(findAllNotDone(), timezone);
     }
 
     @Override
     public Optional<Task> findById(int taskId, String timezone) { 
         var task = findById(taskId);        
         if (task.isPresent()) {
-            task.get().convertTaskTimeFromTimezone(timezone);    
+            convertTaskTimeFromTimezone(task.get(), timezone);    
+        } else {
+            throw new IllegalArgumentException("Задача с указанным идентификатором не найдена");
         }
         return task;
     }
 
+    private List<Task> convertTaskListTimeFromTimeZone(List<Task> tasks, String timezone) {
+        tasks.stream().forEach(t -> {
+            convertTaskTimeFromTimezone(t, timezone);
+        });
+        return tasks;
+    }
 
+    private void convertTaskTimeFromTimezone(Task task, String timezone) {
+        task.setCreated(
+            ZonedDateTime.of(task.getCreated(), ZoneOffset.UTC)
+                .withZoneSameInstant(ZoneId.of(timezone)).toLocalDateTime()
+            );   
+    }
 
 }

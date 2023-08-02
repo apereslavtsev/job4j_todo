@@ -28,11 +28,4 @@ public class User {
     @Column(name = "user_zone")
     private String timezone = TimeZone.getDefault().getID();
 
-    public String getTimezone() {
-        if (this.timezone == null
-                || this.timezone.isEmpty()) {
-            return TimeZone.getDefault().getID();
-        }
-        return this.timezone;
-    }
 }
