@@ -13,6 +13,4 @@ public interface UserService {
 
     List<String> getAllTimeZones();
 
-    String getUserTimezoneOrDefault(User user);
-
 }

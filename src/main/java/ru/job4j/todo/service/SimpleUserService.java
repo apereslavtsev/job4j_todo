@@ -18,8 +18,6 @@ public class SimpleUserService implements UserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleUserService.class.getName());
 
-    private static final String DEFAULT_TIMEZONE = TimeZone.getDefault().getID();
-
     private UserRepository userRepository;
 
     @Override
@@ -40,16 +38,6 @@ public class SimpleUserService implements UserService {
     @Override
     public List<String> getAllTimeZones() {
         return Arrays.asList(TimeZone.getAvailableIDs());
-    }
-
-    @Override
-    public String getUserTimezoneOrDefault(User user) {
-        String timezone = user.getTimezone();
-        if (timezone == null
-                || timezone.isEmpty()) {
-            timezone = DEFAULT_TIMEZONE;
-        }
-        return timezone;
     }
 
 }

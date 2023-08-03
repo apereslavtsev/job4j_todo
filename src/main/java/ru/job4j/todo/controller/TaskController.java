@@ -11,7 +11,7 @@ import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
-import ru.job4j.todo.service.UserService;
+import ru.job4j.todo.util.TimeZoneUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,36 +29,33 @@ public class TaskController {
 
     private CategoryService categoryService;
 
-    private UserService userService;
-
     @GetMapping()
     public String getAll(Model model, @SessionAttribute User user) {
         model.addAttribute("tasks", taskService.findAll(
-            userService.getUserTimezoneOrDefault(user)));
+                TimeZoneUtils.getUserTimezoneOrDefault(user)));
         return "tasks/list";
     }
 
     @GetMapping("doneTasks")
     public String getDoneTasks(Model model, @SessionAttribute User user) {
         model.addAttribute("tasks", taskService.findAllDone(
-            userService.getUserTimezoneOrDefault(user)));
+                TimeZoneUtils.getUserTimezoneOrDefault(user)));
         return "tasks/list";
     }
 
     @GetMapping("performedTasks")
     public String getNotDoneTasks(Model model, @SessionAttribute User user) {
         model.addAttribute("tasks", taskService.findAllNotDone(
-            userService.getUserTimezoneOrDefault(user)));
+                TimeZoneUtils.getUserTimezoneOrDefault(user)));
         return "tasks/list";
     }
 
     @GetMapping("/{id}")
     public String getById(Model model, @PathVariable int id, @SessionAttribute User user) {
-        Optional<Task> taskOptional;
-        try {
-            taskOptional = taskService.findById(id, userService.getUserTimezoneOrDefault(user));            
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("message", e.getMessage());
+        Optional<Task> taskOptional = taskService.findById(
+            id, TimeZoneUtils.getUserTimezoneOrDefault(user));
+        if (taskOptional.isEmpty()) {
+            model.addAttribute("message", "Задача с указанным идентификатором не найдена");
             LOG.error(String.format("tasks id %d not found", id));
             return "errors/404";
         }
@@ -71,7 +68,7 @@ public class TaskController {
     public String doneTask(Model model, @PathVariable int id) {
         if (!taskService.done(id)) {
             model.addAttribute("message",
-             "Задача с указанным идентификатором не найден");
+                    "Задача с указанным идентификатором не найден");
             LOG.error(String.format("tasks id %d not found", id));
             return "errors/404";
         }
@@ -81,10 +78,10 @@ public class TaskController {
     @GetMapping("update/{id}")
     public String getByIdForUpdate(Model model, @PathVariable int id, @SessionAttribute User user) {
         Optional<Task> taskOptional = taskService.findById(
-            id, userService.getUserTimezoneOrDefault(user));
+                id, TimeZoneUtils.getUserTimezoneOrDefault(user));
         if (taskOptional.isEmpty()) {
             model.addAttribute("message",
-             "Задача с указанным идентификатором не найден");
+                    "Задача с указанным идентификатором не найден");
             LOG.error(String.format("tasks id %d not found", id));
             return "errors/404";
         }
@@ -96,7 +93,6 @@ public class TaskController {
         return "tasks/update";
     }
 
-
     @GetMapping("/create")
     public String getCreatePage(Model model) {
         model.addAttribute("categories", categoryService.getAll());
@@ -106,9 +102,9 @@ public class TaskController {
 
     @PostMapping("/create")
     public String create(@ModelAttribute Task task, Model model,
-                         @SessionAttribute User user,
-                         @RequestParam int priorityId,
-                         @RequestParam List<Integer> categoriesId) {
+            @SessionAttribute User user,
+            @RequestParam int priorityId,
+            @RequestParam List<Integer> categoriesId) {
         fillTaskFromAttributesData(task, user, priorityId, categoriesId);
         taskService.create(task);
         return "redirect:/tasks";
@@ -116,9 +112,9 @@ public class TaskController {
 
     @PostMapping("/update")
     public String update(@ModelAttribute Task task, Model model,
-                         @SessionAttribute User user,
-                         @RequestParam int priorityId,
-                         @RequestParam List<Integer> categoriesId) {
+            @SessionAttribute User user,
+            @RequestParam int priorityId,
+            @RequestParam List<Integer> categoriesId) {
         fillTaskFromAttributesData(task, user, priorityId, categoriesId);
         if (!taskService.update(task)) {
             model.addAttribute("message", "Не удалось обновить задачу " + task);
@@ -129,17 +125,17 @@ public class TaskController {
     }
 
     private void fillTaskFromAttributesData(Task task, User user, int priorityId,
-                                            List<Integer> categoriesId) {
-        task.setUser(user);        
+            List<Integer> categoriesId) {
+        task.setUser(user);
         task.setCategories(categoryService.getByIdList(categoriesId));
-        task.setPriority(priorityService.getById(priorityId).get());        
+        task.setPriority(priorityService.getById(priorityId).get());
     }
 
     @GetMapping("/delete/{id}")
     public String delete(Model model, @PathVariable int id) {
         if (!taskService.delete(id)) {
             model.addAttribute("message",
-             "Не удалось удалить задачу с указанным идентификатором");
+                    "Не удалось удалить задачу с указанным идентификатором");
             LOG.error(String.format("tasks id %d has not been delete", id));
             return "errors/404";
         }
